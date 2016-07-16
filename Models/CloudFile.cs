@@ -11,7 +11,13 @@ namespace Upload.Models
         public string FileName { get; set; }
         public string URL { get; set; }
         public long Size { get; set; }
-       
+        public long BlockCount { get; set; }
+        public CloudBlockBlob BlockBlob { get; set; }
+        public DateTime StartTime { get; set; }
+        public string UploadStatusMessage { get; set; }
+        public bool IsUploadCompleted { get; set; }
+
+
 
         public static CloudFile CreateFromIlistBlobItem(IListBlobItem item)
         {

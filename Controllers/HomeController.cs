@@ -25,6 +25,25 @@ namespace Upload.Controllers
             return View(blobsList);
         }
 
+        public ActionResult SetMetadata(int blocksCount, string fileName, long fileSize)
+        {
+            var container = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["ConfigurationSectionKey"]).CreateCloudBlobClient().GetContainerReference(ConfigurationManager.AppSettings["CloudStorageContainerReference"]);
+            container.CreateIfNotExists();
+            var fileToUpload = new CloudFile()
+            {
+                BlockCount = blocksCount,
+                FileName = fileName,
+                Size = fileSize,
+                BlockBlob = container.GetBlockBlobReference(fileName),
+                StartTime = DateTime.Now,
+                IsUploadCompleted = false,
+                UploadStatusMessage = string.Empty
+            };
+            Session.Add("CurrentFile", fileToUpload);
+            return Json(true);
+
+        }
+
         public ActionResult UploadFile()
         {
             if (Request.Files.Count > 0)
@@ -35,7 +54,7 @@ namespace Upload.Controllers
                  ConfigurationManager.AppSettings.Get("CloudStorageContainerReference"));
                 storageContainer.CreateIfNotExists();
                
-                //code run to make container public view
+                //code run once to make container public view
                 // BlobContainerPermissions permissions = storageContainer.GetPermissions();
                // permissions.PublicAccess = BlobContainerPublicAccessType.Container;
                // storageContainer.SetPermissions(permissions);
